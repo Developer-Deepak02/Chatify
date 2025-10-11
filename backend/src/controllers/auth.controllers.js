@@ -4,6 +4,10 @@ import bcrypt from "bcryptjs";
 
 export const signup = async (req, res) => {
 	const { fullname, email, password } = req.body;
+	const name = typeof fullname === 'string' ? fullname.trim() : '';
+	const mail = typeof email === 'string' ? email.trim().toLowerCase() : '';
+	const pass = typeof password === 'string' ? password : '';
+	
 
 	try {
 		// validate user input
@@ -41,9 +45,9 @@ export const signup = async (req, res) => {
 		});
 
 		if (newUser) {
-			// generate token and send as HTTP-only cookie
-			generateToken(newUser._id, res);
-			await newUser.save();
+			// Save user to database
+			const savedUser = await newUser.save();
+			generateToken(savedUser._id, res);
 
 			// respond with user data excluding password
 			res.status(201).json({
