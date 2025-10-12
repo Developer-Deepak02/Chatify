@@ -1,13 +1,14 @@
 import { generateToken } from "../lib/utils.js";
 import { User } from "../models/User.model.js";
 import bcrypt from "bcryptjs";
+import "dotenv/config.js";
+import { sendWelcomeEmail } from "../emails/emailHandlers.js";
 
 export const signup = async (req, res) => {
 	const { fullname, email, password } = req.body;
-	const name = typeof fullname === 'string' ? fullname.trim() : '';
-	const mail = typeof email === 'string' ? email.trim().toLowerCase() : '';
-	const pass = typeof password === 'string' ? password : '';
-	
+	const name = typeof fullname === "string" ? fullname.trim() : "";
+	const mail = typeof email === "string" ? email.trim().toLowerCase() : "";
+	const pass = typeof password === "string" ? password : "";
 
 	try {
 		// validate user input
@@ -56,12 +57,22 @@ export const signup = async (req, res) => {
 				fullname: newUser.fullname,
 				profilePic: newUser.profilePic,
 			});
+			// Send welcome email
+			try {
+				await sendWelcomeEmail(
+					savedUser.email,
+					savedUser.fullname,
+					process.env.CLIENT_URL
+				);
+			} catch (error) {
+				console.error("Error sending welcome email:", error);
+			}
 		} else {
 			// This case is unlikely to occur, but it's good to handle it
 			res.status(400);
 			throw new Error("Invalid user data");
 		}
-    // catch block to handle any unexpected errors
+		// catch block to handle any unexpected errors
 	} catch (error) {
 		console.log("Error in signup controller:", error);
 		res.status(500).json({ message: "Server Error" });
