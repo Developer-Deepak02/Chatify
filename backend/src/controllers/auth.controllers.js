@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 import "dotenv/config.js";
 import { sendWelcomeEmail } from "../emails/emailHandlers.js";
 
+// signup user
 export const signup = async (req, res) => {
 	const { fullname, email, password } = req.body;
 	const name = typeof fullname === "string" ? fullname.trim() : "";
@@ -77,4 +78,40 @@ export const signup = async (req, res) => {
 		console.log("Error in signup controller:", error);
 		res.status(500).json({ message: "Server Error" });
 	}
+};
+
+// login user
+export const login = async (req, res) => {
+	const { email, password } = req.body;
+
+	try {
+		const user = await User.findOne({ email });
+		// check if user exists
+		if (!user) {
+			return res.status(400).json({ message: "Invalid email or password" });
+		}
+		// compare password
+		const isPasswordCorrect = await bcrypt.compare(password, user.password);
+		if (!isPasswordCorrect) {
+			return res.status(400).json({ message: "Invalid email or password" });
+		}
+		// generate token
+		generateToken(user._id, res);
+		// respond with user data excluding password
+		res.status(200).json({
+			_id: user._id,
+			email: user.email,
+			fullname: user.fullname,
+			profilePic: user.profilePic,
+		});
+	} catch (error) {
+		console.log("Error in login controller:", error);
+		res.status(500).json({ message: "Internal server Error" });
+	}
+};
+
+// logout user by clearing the cookie
+export const logout = (_, res) => {
+	res.cookie("jwt", "", { maxAge: 0 });
+	res.status(200).json({ message: "User logged out" });
 };

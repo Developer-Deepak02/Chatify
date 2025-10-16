@@ -11,7 +11,7 @@ export const sendWelcomeEmail = async (to, name, clientURL) => {
 
 	// Ensure we always have a URL for the button
 	const urlToUse =
-		clientURL || process.env.CLIENT_URL || "https://your-frontend.example.com";
+		clientURL || process.env.CLIENT_URL;
 
 	// Normalize `from` header
 	let from;
