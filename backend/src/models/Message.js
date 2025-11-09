@@ -14,6 +14,8 @@ const messageSchema = new mongoose.Schema(
     },
     text: {
       type: String,
+      trim: true,
+      maxlenghth: 2000,
     
     },
     image:{
