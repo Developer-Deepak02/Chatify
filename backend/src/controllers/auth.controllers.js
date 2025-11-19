@@ -142,3 +142,19 @@ export const updateProfile = async (req, res) => {
 		res.status(500).json({ message: "Internal server Error" });
 	}
 };
+
+// check authenticated user
+export const checkAuth = async (req, res) => {
+    try {
+        if (!req.user) {
+            return res.status(200).json({ user: null });
+        }
+
+        const user = await User.findById(req.user._id).select("-password");
+
+        res.status(200).json({ user });
+    } catch (error) {
+        console.log("Error in checkAuth controller:", error);
+        res.status(500).json({ message: "Internal server Error" });
+    }
+};
