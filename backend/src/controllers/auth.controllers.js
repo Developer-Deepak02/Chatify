@@ -5,6 +5,7 @@ import "dotenv/config.js";
 import { sendWelcomeEmail } from "../emails/emailHandlers.js";
 import cloudinary from "../lib/cloudinary.js";
 
+
 // signup user
 export const signup = async (req, res) => {
 	const { fullname, email, password } = req.body;
@@ -145,16 +146,23 @@ export const updateProfile = async (req, res) => {
 
 // check authenticated user
 export const checkAuth = async (req, res) => {
-    try {
-        if (!req.user) {
-            return res.status(200).json({ user: null });
-        }
+	try {
+		if (!req.user) return res.status(200).json({ user: null });
 
-        const user = await User.findById(req.user._id).select("-password");
+		const user = await User.findById(req.user._id).select("-password");
 
-        res.status(200).json({ user });
-    } catch (error) {
-        console.log("Error in checkAuth controller:", error);
-        res.status(500).json({ message: "Internal server Error" });
-    }
+		return res.status(200).json({
+			user: {
+				_id: user._id,
+				fullname: user.fullname,
+				email: user.email,
+				profilePic: user.profilePic, // 🔥 IMPORTANT
+			},
+		});
+	} catch (error) {
+		console.log("Error in checkAuth controller:", error);
+		res.status(500).json({ message: "Internal server Error" });
+	}
 };
+
+

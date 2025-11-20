@@ -11,6 +11,9 @@ export const useAuthStore = create((set, get) => ({
 	checkAuth: async () => {
 		try {
 			const res = await axiosInstance.get("/auth/check");
+
+			// Store user returned from backend
+			set({ authUser: res.data.user || null });
 		} catch (error) {
 			console.log("error in authCheck:", error);
 			set({ authUser: null });
@@ -38,20 +41,22 @@ export const useAuthStore = create((set, get) => ({
 
 	login: async (data) => {
 		set({ isLoggingIn: true });
+
 		try {
 			const res = await axiosInstance.post("/auth/login", data);
-			set({ authUser: res.data });
+
+			// Backend returns raw user object → store it directly
+			set({ authUser: res?.data || null });
 
 			toast.success("Logged in successfully");
 
-			get().connectSocket();
+			// get().connectSocket();
 		} catch (error) {
-			toast.error(error.response.data.message);
+			toast.error(error.response?.data?.message || "Login failed");
 		} finally {
 			set({ isLoggingIn: false });
 		}
 	},
-
 
 	logout: async () => {
 		try {
@@ -62,7 +67,18 @@ export const useAuthStore = create((set, get) => ({
 			console.log("Error in logout:", error);
 			toast.error("Logout failed. Please try again.");
 		}
-	}
+	},
+
+	updateProfile: async (data) => {
+		try {
+			const res = await axiosInstance.put("/auth/update-profile", data);
+			set({ authUser: res.data });
+			toast.success("Profile updated successfully");
+		} catch (error) {
+			console.log("Error in update profile:", error);
+			toast.error(error.response.data.message);
+		}
+	},
 }));
 
 export default useAuthStore;

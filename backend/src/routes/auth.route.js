@@ -12,13 +12,13 @@ import { arcjetProtection } from "../middleware/arcjet.middleware.js";
 const router = express.Router();
 
 // Apply Arcjet protection middleware to all routes in this router
-router.use(arcjetProtection);
+// router.use(arcjetProtection);
 
 //route for user sign-up
 router.post("/signup", signup);
 
 // route for user log-in
-router.post("/login", arcjetProtection, login);
+router.post("/login", login);
 
 // route for user log-out
 router.post("/logout", logout);
@@ -26,6 +26,6 @@ router.post("/logout", logout);
 //update profile
 router.put("/update-profile", protectRoute, updateProfile);
 
-router.get("/check", protectRoute, checkAuth);
+router.get("/check", protectRoute , checkAuth);
 
 export default router;
