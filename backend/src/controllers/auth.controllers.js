@@ -156,7 +156,7 @@ export const checkAuth = async (req, res) => {
 				_id: user._id,
 				fullname: user.fullname,
 				email: user.email,
-				profilePic: user.profilePic, // 🔥 IMPORTANT
+				profilePic: user.profilePic, 
 			},
 		});
 	} catch (error) {

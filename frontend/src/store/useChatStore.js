@@ -19,7 +19,7 @@ export const useChatStore = create((set, get) => ({
     },
 
     setActiveTab:(tab)=> set({activeTab: tab}),
-    setSelectedUser: (user) => set({ selectedUser }),
+    setSelectedUser: (user) => set({ selectedUser : user }),
 
 
     getAllContacts: async () => {
@@ -34,7 +34,7 @@ export const useChatStore = create((set, get) => ({
         set({isUserLoading: false});
       }
     },
-    getAllChatPartners: async () => {
+    getMyChatPartners: async () => {
       set({isUserLoading: true});
       try {
         const res = await axiosInstance.get("/messages/chats");
